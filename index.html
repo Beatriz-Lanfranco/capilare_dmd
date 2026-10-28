@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b2a7a">
+<meta name="description" content="Capilare: seu cronograma capilar, comunidade e produtos.">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/png" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Capilare">
+<title>Capilare • Cronograma Capilar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef3fa;--card:#cfe0ec;--navy:#0b2a7a;--blue:#7fa6c9;--orange:#e8781e;--pink:#ff6fd8;--ink:#0d1b2a;--white:#fff}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:Poppins,system-ui,sans-serif;background:#dfe6f0;color:var(--ink);display:flex;justify-content:center}
+#app{width:100%;max-width:440px;height:100%;background:var(--bg);position:relative;display:flex;flex-direction:column;overflow:hidden}
+main{flex:1;overflow-y:auto;padding:calc(18px + env(safe-area-inset-top,0px)) 16px 16px}
+.screen{display:none}.screen.on{display:block}
+h1,h2,h3{font-family:'Playfair Display',serif;font-weight:800}
+h1{font-size:26px;line-height:1.1}h2{font-size:17px}h3{font-size:15px}
+small,.muted{font-size:12px;color:#3c4c60}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.bell{width:34px;height:34px;border-radius:50%;background:var(--navy);border:0;color:#fff;font-size:15px}
+.card{background:var(--card);border-radius:18px;padding:14px;margin-bottom:14px}
+.navy{background:var(--navy);color:#fff}
+.btn{border:0;border-radius:20px;padding:6px 14px;font:600 12px Poppins;cursor:pointer;background:var(--orange);color:#fff}
+.btn.w{background:#fff;color:var(--navy)}.btn:active{transform:scale(.96)}
+.avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#a4243b,#4a1230);display:grid;place-items:center;font-size:26px;flex:none;border:2px solid var(--orange)}
+.ring{width:64px;height:64px;border-radius:50%;background:conic-gradient(var(--navy) calc(var(--p)*1%),#fff 0);display:grid;place-items:center;flex:none}
+.ring b{width:50px;height:50px;border-radius:50%;background:var(--card);display:grid;place-items:center;font:800 15px 'Playfair Display'}
+.bar{height:6px;background:#fff;border-radius:6px;overflow:hidden;margin:4px 0 8px}.bar i{display:block;height:100%;background:var(--navy);width:0;transition:width .4s}
+.row{display:flex;align-items:center;gap:12px}.sp{justify-content:space-between}
+.banner{background:var(--orange);color:#fff;border-radius:12px;padding:6px;text-align:center;font-weight:600;font-size:13px;margin-bottom:12px}
+.mes{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.mes span{background:var(--navy);color:#fff;padding:6px 26px;border-radius:14px;font:800 20px 'Playfair Display'}
+.mes button{background:none;border:0;font-size:20px;cursor:pointer;padding:4px 10px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
+.cal .dw{font-size:11px;color:var(--orange);font-weight:600}
+.cal .d{aspect-ratio:1;border-radius:8px;border:0;background:transparent;font:500 14px Poppins;color:var(--ink);cursor:pointer}
+.d.hid{background:var(--blue)}.d.nut{background:var(--orange);color:#fff}.d.rec{background:var(--pink)}
+.d.done{opacity:.55}.d.sel{outline:3px solid var(--navy)}.d.out{color:#9aa8b8}
+.leg{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;margin-top:10px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.week{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:10px;gap:4px}
+.week i{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;margin:3px auto;font:700 11px Poppins;font-style:normal;background:#fff}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat{border-radius:10px;padding:10px 4px;text-align:center;font:600 12px Poppins;color:#fff}
+.stat b{display:block;font:800 22px 'Playfair Display'}
+.tabs{display:flex;gap:16px;font-size:13px;margin-bottom:10px}.tabs span{padding-bottom:2px;cursor:pointer}.tabs .on{border-bottom:2px solid var(--navy);font-weight:600}
+.post{background:var(--card);border-radius:14px;padding:12px;margin-bottom:12px}
+.post p{font-size:12px;margin:6px 0 8px;line-height:1.4}
+.pill{font-size:10px;padding:2px 8px;border-radius:10px;background:#8a99aa;color:#fff;margin-left:6px}
+.tag{font-size:10px;padding:2px 8px;border-radius:8px;background:var(--orange);color:#fff;margin-right:4px}
+.like{background:none;border:0;font:500 13px Poppins;cursor:pointer;margin-right:12px}
+.chips{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;padding-bottom:4px}
+.chip{flex:none;padding:6px 12px;border-radius:12px;background:var(--card);border:0;font:500 12px Poppins;cursor:pointer}.chip.on{background:var(--orange);color:#fff}
+input.s{width:100%;padding:10px 14px;border-radius:14px;border:1px solid #b8cce0;background:#fff;font:14px Poppins;margin-bottom:12px}
+.prods{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.prod{background:#fff;border-radius:14px;padding:12px;font-size:12px}
+.prod .im{height:80px;border-radius:10px;background:var(--card);display:grid;place-items:center;font-size:36px;margin-bottom:8px}
+.prod b{display:block;font-size:13px}.prod .st{color:var(--orange);margin:4px 0}
+.menu button{width:100%;text-align:left;background:none;border:0;border-bottom:1px solid #b8cce0;padding:12px 4px;font:500 14px Poppins;display:flex;justify-content:space-between}
+nav{display:flex;justify-content:space-around;background:var(--card);border-radius:22px;margin:0 10px calc(10px + env(safe-area-inset-bottom,0px));padding:8px 4px}
+nav button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;font:500 10px Poppins;color:var(--navy);cursor:pointer;padding:2px 6px;filter:grayscale(1) opacity(.7)}
+nav button span{font-size:20px}nav button.on{color:var(--orange);filter:none}
+#toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:8px 16px;border-radius:16px;font-size:13px;opacity:0;transition:.25s;pointer-events:none}
+#toast.on{opacity:1;transform:translateX(-50%)}
+button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+</style>
+</head>
+<body>
+<div id="app">
+<main>
+
+<!-- HOME -->
+<section class="screen on" id="home">
+  <div class="head"><div><h1>Olá Sofia!</h1><small>Seu cabelo merece um<br>cuidado especial hoje.</small></div><div class="avatar">👩🏻‍🦰</div></div>
+  <div class="card"><div class="row sp"><h3>Seu progresso</h3><small>Ver detalhes</small></div>
+    <div class="row" style="margin-top:10px"><div class="ring" id="ring"><b id="pct">0%</b></div>
+      <div style="flex:1"><small>Cronograma concluído</small><div class="bar"><i id="bar"></i></div><small id="cnt"></small></div></div></div>
+  <div class="card navy"><div class="row sp"><div><small style="color:#cfe0ec">Próximo tratamento</small><h1 id="nxt">Hidratação</h1></div>
+    <div style="text-align:right"><small style="color:#fff">Hoje • 18:30</small><br><button class="btn w" id="start" style="margin-top:6px">Iniciar</button></div></div></div>
+  <div class="card"><h3 style="text-align:center;margin-bottom:8px">Cronograma da semana</h3><div class="week" id="week"></div></div>
+  <div class="row sp" style="margin-bottom:8px"><h2>Recomendações para você</h2><small>Ver todos</small></div>
+  <div class="prods" id="recs"></div>
+</section>
+
+<!-- CALENDARIO -->
+<section class="screen" id="calendario">
+  <div class="head"><h1>Meu Cronograma</h1><button class="bell">🔔</button></div>
+  <div class="banner">✨ Novo cronograma capilar</div>
+  <div class="mes"><button id="prev">‹</button><span id="mes">Outubro 2026</span><button id="next">›</button></div>
+  <div class="card"><div class="cal" id="cal"></div>
+    <div class="leg"><span><i class="dot" style="background:var(--blue)"></i>Hidratação</span><span><i class="dot" style="background:var(--orange)"></i>Nutrição</span><span><i class="dot" style="background:var(--pink)"></i>Reconstrução</span></div></div>
+  <div class="card" id="detail"></div>
+  <div class="stats"><div class="stat" style="background:var(--blue)"><b id="c1">0</b>Hidratações</div><div class="stat" style="background:var(--orange)"><b id="c2">0</b>Nutrições</div><div class="stat" style="background:var(--pink)"><b id="c3">0</b>Reconstruções</div></div>
+</section>
+
+<!-- COMUNIDADE -->
+<section class="screen" id="comunidade">
+  <div class="head"><div><h1>Comunidade</h1><small>Compartilhe, aprenda e inspire outras pessoas na jornada capilar.</small></div></div>
+  <div class="card navy"><h3>Compartilhe sua evolução!</h3><p style="font-size:12px;margin:6px 0 10px">Mostre o seu resultado e conquistas para a comunidade.</p><button class="btn" id="pub">Publicar agora</button></div>
+  <div class="tabs"><span class="on">Feed</span><span>Populares</span></div>
+  <div id="feed"></div>
+</section>
+
+<!-- PRODUTOS -->
+<section class="screen" id="produtos">
+  <div class="head"><div><h1>Produtos</h1><small>Descubra produtos e compartilhe com a comunidade.</small></div></div>
+  <input class="s" id="q" placeholder="🔍 Buscar produto, marca ou ingrediente">
+  <div class="chips" id="chips"></div>
+  <div class="prods" id="plist"></div>
+</section>
+
+<!-- PERFIL -->
+<section class="screen" id="perfil">
+  <div class="row" style="margin-bottom:14px"><div class="avatar" style="width:80px;height:80px;font-size:40px">👩🏻‍🦰</div>
+    <div><h1>Sofia Martins</h1><small>⭐ Cabelo liso 1C<br>📍 São Paulo - SP</small><br><button class="btn" style="margin-top:6px" id="edit">Editar perfil</button></div></div>
+  <div class="card"><h3>Meu progresso</h3><div class="stats" style="margin:10px 0 0"><div class="stat" style="color:var(--ink)"><b id="pdone">0</b>Tratamentos</div><div class="stat" style="color:var(--ink)"><b>4</b>Dias de sequência</div><div class="stat" style="color:var(--ink)"><b>4</b>Fotos</div></div></div>
+  <div class="card"><h3>Meu cabelo</h3><small>Tipo: liso 1C<br>Necessidade: Hidratação<br>Objetivo: preservar o brilho dos fios.</small></div>
+  <div class="card"><h3>Minhas conquistas</h3><small>🟠 Primeiro cronograma<br>🏅 7 dias de sequência</small></div>
+  <div class="menu"><button>🔔 Notificações <span>›</span></button><button>🔒 Privacidade e segurança <span>›</span></button><button>❔ Ajuda e suporte <span>›</span></button><button>ℹ️ Sobre o Capilare <span>›</span></button></div>
+</section>
+
+</main>
+<div id="toast"></div>
+<nav id="nav"></nav>
+</div>
+
+<script>
+// ---------- dados ----------
+const TODAY=new Date(2026,9,8); // data fixa de demonstração (08/10/2026)
+const PLAN={hid:[1,5,8,12,15,19,21,26,28],nut:[3,10,17,24],rec:[30]}; // outubro/2026
+const NAMES={hid:'Hidratação',nut:'Nutrição',rec:'Reconstrução'};
+const L={hid:'H',nut:'N',rec:'R'};
+const PRODUCTS=[
+ {n:'Liso, Leve and Solto',b:'Lola Cosméticos',t:'Hidratação',e:'🧴',r:'4,7',c:'hid'},
+ {n:'Óleo de Argan',b:'Beleza Ruiva',t:'Finalização',e:'🫙',r:'5,0',c:'fin'},
+ {n:'Máscara Pró-Hidratação',b:'TRESemmé',t:'Hidratação',e:'🧴',r:'4,9',c:'hid'},
+ {n:'Tratamento Liso dos Sonho',b:'Elseve',t:'Nutrição',e:'💗',r:'4,9',c:'nut'},
+ {n:'Reconstrutor Intensivo',b:'Beleza Ruiva',t:'Reconstrução',e:'🧪',r:'4,8',c:'rec'}];
+const POSTS=[
+ {u:'Isabella Souza',lv:'Intermediário',t:'Hoje tenho uma indicação babadeira, meninas! 💗 SOS Cachos Coco, da Salon Line, é perfeita para hidratar e dar muito brilho aos cachos.',tg:['Resultados','Hidratação'],l:30},
+ {u:'Ana Luiza',lv:'Iniciante',t:'Meninas, estou procurando um óleo nutritivo para incluir na minha rotina e estou pensando em comprar o da TRESemmé. Alguém já usou? O que vocês acham? Vale a pena?',tg:['Dicas','Finalização'],l:10},
+ {u:'Rafael Fernandes',lv:'Iniciante',t:'Alguém tem indicação de produtos para cabelo liso masculino? Quero começar uma rotina de cuidados, mas preciso de produtos práticos e que realmente funcionem.',tg:['Dicas'],l:4}];
+// ---------- estado ----------
+let done=new Set();try{done=new Set(JSON.parse(localStorage.getItem('cap_done')||'[]'))}catch(e){}
+const save=()=>{try{localStorage.setItem('cap_done',JSON.stringify([...done]))}catch(e){}};
+let view={y:2026,m:9},sel=8;
+const $=id=>document.getElementById(id);
+const key=d=>`${view.y}-${view.m}-${d}`;
+const typeOf=d=>view.y==2026&&view.m==9?Object.keys(PLAN).find(k=>PLAN[k].includes(d)):null;
+const isDone=(d)=>done.has(key(d))||(view.y==2026&&view.m==9&&d<TODAY.getDate()&&!!typeOf(d)&&!done.has('undone'+d));
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)}
+// ---------- navegação ----------
+const TABS=[['home','🏠','Home'],['calendario','📅','Calendário'],['comunidade','💬','Comunidade'],['produtos','♡','Produtos'],['perfil','👤','Perfil']];
+$('nav').innerHTML=TABS.map(t=>`<button data-t="${t[0]}"><span>${t[1]}</span>${t[2]}</button>`).join('');
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
+ document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===id));document.querySelector('main').scrollTop=0}
+$('nav').onclick=e=>{const b=e.target.closest('button');if(b)go(b.dataset.t)};
+// ---------- progresso ----------
+function counts(){const all=[];for(const k in PLAN)PLAN[k].forEach(d=>all.push(d));
+ const dn=all.filter(d=>isDone(d)).length;return{total:all.length,dn}}
+function renderHome(){const{total,dn}=counts(),p=Math.round(dn/total*100);
+ $('pct').textContent=p+'%';$('ring').style.setProperty('--p',p);$('bar').style.width=p+'%';
+ $('cnt').textContent=`✔ ${dn} concluídos   ⏰ ${total-dn} restantes`;$('pdone').textContent=dn;
+ const t=typeOf(TODAY.getDate());$('nxt').textContent=t?NAMES[t]:'Descanso';
+ $('start').textContent=isDone(TODAY.getDate())?'Concluído ✔':'Iniciar';
+ const w=[];const mon=TODAY.getDate()-((TODAY.getDay()+6)%7);
+ ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].forEach((n,i)=>{const d=mon+i,k=typeOf(d);
+  w.push(`<div>${n}<i style="${k?`background:var(--${k=='hid'?'blue':k=='nut'?'orange':'pink'});color:${k=='hid'?'var(--navy)':'#fff'}`:''}">${k?L[k]:'L'}</i><br>${k?NAMES[k].slice(0,9):'Livre'}</div>`)});
+ $('week').innerHTML=w.join('');
+ $('c1').textContent=PLAN.hid.length;$('c2').textContent=PLAN.nut.length;$('c3').textContent=PLAN.rec.length}
+$('start').onclick=()=>{const d=TODAY.getDate();if(!typeOf(d))return toast('Hoje é dia livre 🌿');
+ done.add(key(d));save();renderHome();renderCal();toast('Tratamento concluído! 💙')};
+// ---------- calendário ----------
+const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+function renderCal(){$('mes').textContent=`${MESES[view.m]} ${view.y}`;
+ let h=['D','S','T','Q','Q','S','S'].map(x=>`<div class="dw">${x}</div>`).join('');
+ const first=new Date(view.y,view.m,1).getDay(),n=new Date(view.y,view.m+1,0).getDate();
+ for(let i=0;i<first;i++)h+='<div></div>';
+ for(let d=1;d<=n;d++){const t=typeOf(d);h+=`<button class="d ${t||''} ${t&&isDone(d)?'done':''} ${d==sel?'sel':''}" data-d="${d}">${d}</button>`}
+ $('cal').innerHTML=h;
+ const t=typeOf(sel);$('detail').innerHTML=t?`<small>${sel} de ${MESES[view.m]}</small><h2>${NAMES[t].toUpperCase()}</h2><small>Duração: 30 min • ${isDone(sel)?'Concluído ✔':'Pendente'}</small>`:`<small>${sel} de ${MESES[view.m]}</small><h2>Dia livre 🌿</h2><small>Sem tratamento programado.</small>`}
+$('cal').onclick=e=>{const b=e.target.closest('.d');if(b){sel=+b.dataset.d;renderCal()}};
+$('prev').onclick=()=>{view.m--;if(view.m<0){view.m=11;view.y--}renderCal()};
+$('next').onclick=()=>{view.m++;if(view.m>11){view.m=0;view.y++}renderCal()};
+// ---------- produtos ----------
+const card=p=>`<div class="prod"><div class="im">${p.e}</div><b>${p.n}</b><small>${p.b}</small><div class="st">★ ${p.r}</div><span class="tag">${p.t}</span></div>`;
+$('recs').innerHTML=PRODUCTS.slice(0,2).map(card).join('');
+const CATS=[['todos','Todos'],['hid','Hidratação'],['nut','Nutrição'],['fin','Finalização'],['rec','Reconstrução']];let cat='todos';
+$('chips').innerHTML=CATS.map(c=>`<button class="chip ${c[0]==cat?'on':''}" data-c="${c[0]}">${c[1]}</button>`).join('');
+function renderProds(){const q=$('q').value.toLowerCase();
+ $('plist').innerHTML=PRODUCTS.filter(p=>(cat=='todos'||p.c==cat)&&(p.n+p.b).toLowerCase().includes(q)).map(card).join('')||'<small>Nenhum produto encontrado. Tente outra busca.</small>'}
+$('chips').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;cat=b.dataset.c;document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c==b));renderProds()};
+$('q').oninput=renderProds;
+// ---------- comunidade ----------
+function renderFeed(){$('feed').innerHTML=POSTS.map((p,i)=>`<div class="post"><div class="row"><div class="avatar" style="width:38px;height:38px;font-size:18px;border-width:0">🙂</div><b style="font-size:14px">${p.u}</b><span class="pill">${p.lv}</span></div>
+ <p>${p.t}</p>${p.tg.map(t=>`<span class="tag">${t}</span>`).join('')}
+ <div style="margin-top:8px"><button class="like" data-i="${i}">${p.liked?'💗':'🤍'} ${p.l+(p.liked?1:0)}</button><span class="muted">💬 ${(i+1)*4}</span></div></div>`).join('')}
+$('feed').onclick=e=>{const b=e.target.closest('.like');if(b){POSTS[b.dataset.i].liked=!POSTS[b.dataset.i].liked;renderFeed()}};
+$('pub').onclick=()=>toast('Em breve: publicar sua evolução 📸');
+$('edit').onclick=()=>toast('Em breve: editar perfil');
+// ---------- init ----------
+renderHome();renderCal();renderProds();renderFeed();go('home');
+// ---------- PWA ----------
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}))}
+</script>
+</body>
+</html>
