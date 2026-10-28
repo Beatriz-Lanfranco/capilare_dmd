@@ -1,9 +1,9 @@
 // Service worker do Capilare — cache offline
-const CACHE = 'capilare-v2';
+const CACHE = 'capilare-v3';
 const ASSETS = [
   '/', '/index.html', '/manifest.json',
-  '/icons/icon-192.png', '/icons/icon-512.png',
-  '/icons/maskable-512.png', '/icons/apple-touch-icon.png', '/icons/logo.png'
+  '/icon-192.png', '/icon-512.png',
+  '/maskable-512.png', '/apple-touch-icon.png', '/logo.png'
 ];
 
 self.addEventListener('install', e => {
