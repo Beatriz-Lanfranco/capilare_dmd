@@ -104,6 +104,19 @@ button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
 .opt i{flex:none;width:18px;height:18px;border-radius:50%;background:#cfe0ec;border:2px solid #cfe0ec}
 .opt.on{outline:2px solid var(--navy)}.opt.on i{background:var(--orange);border-color:#fff}
 .nb{display:flex;gap:10px;margin-top:auto;padding-top:16px}.nb .cta{margin:0}
+/* ---- avatar ---- */
+.avatar{overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover}
+#sheet{position:absolute;inset:0;z-index:40;display:flex;align-items:flex-end}
+#sheet[hidden]{display:none}
+#shbd{position:absolute;inset:0;background:rgba(10,20,40,.5)}
+.pn{position:relative;width:100%;background:#fbfbff;border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));max-height:92%;overflow-y:auto;text-align:center}
+.ag{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.ag button{aspect-ratio:1;border-radius:50%;border:3px solid transparent;font-size:30px;cursor:pointer;background:var(--card)}
+.ag button.on{border-color:var(--navy)}
+.sw{display:flex;justify-content:center;gap:12px;margin-bottom:14px}
+.sw button{width:32px;height:32px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px #8a99aa;cursor:pointer}
+.sw button.on{box-shadow:0 0 0 3px var(--navy)}
+.pn .row .cta{flex:1;margin:0}
 </style>
 </head>
 <body>
@@ -112,7 +125,7 @@ button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
 
 <!-- HOME -->
 <section class="screen on" id="home">
-  <div class="head"><div><h1>Olá <span id="uname">Sofia</span>!</h1><small>Seu cabelo merece um<br>cuidado especial hoje.</small></div><div class="avatar">👩🏻‍🦰</div></div>
+  <div class="head"><div><h1>Olá <span id="uname">Sofia</span>!</h1><small>Seu cabelo merece um<br>cuidado especial hoje.</small></div><div class="avatar av">👩🏻‍🦰</div></div>
   <div class="card"><div class="row sp"><h3>Seu progresso</h3><small>Ver detalhes</small></div>
     <div class="row" style="margin-top:10px"><div class="ring" id="ring"><b id="pct">0%</b></div>
       <div style="flex:1"><small>Cronograma concluído</small><div class="bar"><i id="bar"></i></div><small id="cnt"></small></div></div></div>
@@ -152,8 +165,8 @@ button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
 
 <!-- PERFIL -->
 <section class="screen" id="perfil">
-  <div class="row" style="margin-bottom:14px"><div class="avatar" style="width:80px;height:80px;font-size:40px">👩🏻‍🦰</div>
-    <div><h1 id="pname">Sofia Martins</h1><small>⭐ <span id="ptype">Cabelo liso</span><br>📍 São Paulo - SP</small><br><button class="btn" style="margin-top:6px" id="edit">Editar perfil</button></div></div>
+  <div class="row" style="margin-bottom:14px"><div class="avatar av" id="pav" title="Trocar avatar" style="width:80px;height:80px;font-size:40px;cursor:pointer">👩🏻‍🦰</div>
+    <div><h1 id="pname">Sofia Martins</h1><small>⭐ <span id="ptype">Cabelo liso</span><br>📍 São Paulo - SP</small><br><button class="btn" style="margin-top:6px" id="edit">Trocar avatar</button></div></div>
   <div class="card"><h3>Meu progresso</h3><div class="stats" style="margin:10px 0 0"><div class="stat" style="color:var(--ink)"><b id="pdone">0</b>Tratamentos</div><div class="stat" style="color:var(--ink)"><b>4</b>Dias de sequência</div><div class="stat" style="color:var(--ink)"><b>4</b>Fotos</div></div></div>
   <div class="card"><h3>Meu cabelo</h3><small id="hairinfo">Tipo: liso<br>Necessidade: Hidratação<br>Objetivo: preservar o brilho dos fios.</small></div>
   <div class="card"><h3>Minhas conquistas</h3><small>🟠 Primeiro cronograma<br>🏅 7 dias de sequência</small></div>
@@ -161,6 +174,11 @@ button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
 </section>
 
 </main>
+<div id="sheet" hidden><div id="shbd"></div><div class="pn"><h2>Escolha seu avatar</h2>
+<div class="avatar" id="prev" style="width:84px;height:84px;font-size:44px;margin:12px auto"></div>
+<div class="ag" id="ag"></div><div class="sw" id="sw"></div>
+<label class="cta o" style="display:block;margin:0 0 12px;cursor:pointer">📷 Enviar minha foto<input type="file" id="pf" accept="image/*" hidden></label>
+<div class="row"><button class="cta o" id="shc">Cancelar</button><button class="cta" id="shs">Salvar</button></div></div></div>
 <div id="ob" class="on"></div>
 <div id="toast"></div>
 <nav id="nav"></nav>
@@ -316,6 +334,29 @@ $('logout').onclick=()=>{LS.d('cap_session');ob('o_login')};
 // ---- abertura ----
 applyUser();ob('o_splash');
 setTimeout(()=>LS.g('cap_session')&&LS.g('cap_user')?next():ob('o_welc'),1800);
+
+// ---------- AVATAR ----------
+const EMO=['👩🏻‍🦰','👩🏼','👩🏽‍🦱','👩🏾‍🦱','👩🏿‍🦱','👱🏻‍♀️','👩🏻‍🦳','👩🏽','👨🏻','👨🏽‍🦱','👨🏿','🧑🏼‍🦰'];
+const COL=['#a4243b','#e8781e','#7fa6c9','#0b2a7a','#d94fb5','#4f8a5b'];
+let av=LS.g('cap_av'),dr=null;
+function paint(el,a){if(!a)return;if(a.p){el.innerHTML=`<img src="${a.p}" alt="Foto de perfil">`;el.style.background='#cfe0ec'}else{el.textContent=a.e;el.style.background=a.c}}
+const setAv=()=>document.querySelectorAll('.av').forEach(el=>paint(el,av));
+function drawSheet(){paint($('prev'),dr);
+ $('ag').innerHTML=EMO.map((e,i)=>`<button data-e="${e}" class="${dr.e===e?'on':''}" aria-label="Avatar ${i+1}">${e}</button>`).join('');
+ $('sw').innerHTML=COL.map(c=>`<button data-c="${c}" style="background:${c}" class="${dr.c===c?'on':''}" aria-label="Cor de fundo"></button>`).join('')}
+const openSh=()=>{dr=av?{...av}:{e:EMO[0],c:COL[0]};drawSheet();$('sheet').hidden=false};
+$('ag').onclick=e=>{const b=e.target.closest('[data-e]');if(b){dr={e:b.dataset.e,c:dr.c||COL[0]};drawSheet()}};
+$('sw').onclick=e=>{const b=e.target.closest('[data-c]');if(b){dr={e:dr.e||EMO[0],c:b.dataset.c};drawSheet()}};
+$('shc').onclick=$('shbd').onclick=()=>{$('sheet').hidden=true};
+$('shs').onclick=()=>{av=dr;LS.s('cap_av',av);setAv();$('sheet').hidden=true;toast('Avatar atualizado! ✨')};
+$('edit').onclick=$('pav').onclick=openSh;
+$('pf').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+ r.onload=()=>{const im=new Image();
+  im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=240;const s=Math.min(im.width,im.height);
+   c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,240,240);dr={p:c.toDataURL('image/jpeg',.82)};drawSheet()};
+  im.onerror=()=>toast('Não consegui abrir essa imagem.');im.src=r.result};
+ r.readAsDataURL(f);e.target.value=''};
+setAv();
 
 // ---------- PWA ----------
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}))}
