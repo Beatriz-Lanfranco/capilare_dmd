@@ -73,6 +73,37 @@ nav button span{font-size:20px}nav button.on{color:var(--orange);filter:none}
 #toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:8px 16px;border-radius:16px;font-size:13px;opacity:0;transition:.25s;pointer-events:none}
 #toast.on{opacity:1;transform:translateX(-50%)}
 button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+/* ---- onboarding ---- */
+#ob{position:absolute;inset:0;z-index:30;background:#fbfbff;overflow-y:auto;display:none}
+#ob.on{display:block}
+#toast{z-index:50}
+.os{display:none;min-height:100%;flex-direction:column;padding:calc(20px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px))}
+.os.on{display:flex}
+.os.nv{background:var(--navy);color:#fff;align-items:center;justify-content:center;text-align:center;gap:16px}
+.os.nv p{color:#fff;margin:0;max-width:300px}
+.or{color:var(--orange);font:800 21px 'Playfair Display',serif;line-height:1.2}
+.back{background:none;border:0;font-size:24px;color:var(--navy);cursor:pointer;align-self:flex-start;padding:4px 8px 4px 0}
+.os h1{color:var(--navy);margin:8px 0 6px}
+.os p{font-size:13px;color:#3c4c60;margin-bottom:16px}
+.f{display:block;margin-bottom:14px;font-size:12px;font-weight:500}
+.f input{width:100%;margin-top:4px;padding:11px 12px;border:1.5px solid var(--navy);border-radius:10px;font:14px Poppins;background:#fff}
+.cta{width:100%;border:0;border-radius:10px;padding:12px;background:var(--orange);color:#fff;font:600 14px Poppins;cursor:pointer;margin-top:6px}
+.cta:active{transform:scale(.98)}.cta:disabled{opacity:.45;cursor:default}
+.cta.w{background:#fff;color:var(--navy);width:auto;padding:10px 34px;border-radius:20px}
+.cta.o{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.cta.ln{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}
+.cta.nv2{background:var(--navy)}
+.lk{background:none;border:0;color:var(--navy);font:600 12px Poppins;text-decoration:underline;cursor:pointer}
+.ft{margin-top:auto;text-align:center;padding-top:24px;font-size:12px;color:var(--orange)}
+.err{display:block;color:#c0262d;font-size:12px;min-height:16px;margin-bottom:6px}
+.prog{height:4px;background:#d5dfeb;border-radius:4px;margin:10px 0 18px}
+.prog i{display:block;height:100%;background:var(--navy);border-radius:4px;transition:width .3s}
+.qh{font-size:11px;color:#3c4c60;text-align:center}
+.opt{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:var(--blue);color:var(--ink);border-radius:10px;padding:14px;margin-bottom:10px;font:500 14px Poppins;cursor:pointer}
+.opt small{display:block;font-size:11px;color:#2d3f55;font-weight:400;margin-top:2px}
+.opt i{flex:none;width:18px;height:18px;border-radius:50%;background:#cfe0ec;border:2px solid #cfe0ec}
+.opt.on{outline:2px solid var(--navy)}.opt.on i{background:var(--orange);border-color:#fff}
+.nb{display:flex;gap:10px;margin-top:auto;padding-top:16px}.nb .cta{margin:0}
 </style>
 </head>
 <body>
@@ -81,7 +112,7 @@ button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
 
 <!-- HOME -->
 <section class="screen on" id="home">
-  <div class="head"><div><h1>Olá Sofia!</h1><small>Seu cabelo merece um<br>cuidado especial hoje.</small></div><div class="avatar">👩🏻‍🦰</div></div>
+  <div class="head"><div><h1>Olá <span id="uname">Sofia</span>!</h1><small>Seu cabelo merece um<br>cuidado especial hoje.</small></div><div class="avatar">👩🏻‍🦰</div></div>
   <div class="card"><div class="row sp"><h3>Seu progresso</h3><small>Ver detalhes</small></div>
     <div class="row" style="margin-top:10px"><div class="ring" id="ring"><b id="pct">0%</b></div>
       <div style="flex:1"><small>Cronograma concluído</small><div class="bar"><i id="bar"></i></div><small id="cnt"></small></div></div></div>
@@ -122,14 +153,15 @@ button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
 <!-- PERFIL -->
 <section class="screen" id="perfil">
   <div class="row" style="margin-bottom:14px"><div class="avatar" style="width:80px;height:80px;font-size:40px">👩🏻‍🦰</div>
-    <div><h1>Sofia Martins</h1><small>⭐ Cabelo liso 1C<br>📍 São Paulo - SP</small><br><button class="btn" style="margin-top:6px" id="edit">Editar perfil</button></div></div>
+    <div><h1 id="pname">Sofia Martins</h1><small>⭐ <span id="ptype">Cabelo liso</span><br>📍 São Paulo - SP</small><br><button class="btn" style="margin-top:6px" id="edit">Editar perfil</button></div></div>
   <div class="card"><h3>Meu progresso</h3><div class="stats" style="margin:10px 0 0"><div class="stat" style="color:var(--ink)"><b id="pdone">0</b>Tratamentos</div><div class="stat" style="color:var(--ink)"><b>4</b>Dias de sequência</div><div class="stat" style="color:var(--ink)"><b>4</b>Fotos</div></div></div>
-  <div class="card"><h3>Meu cabelo</h3><small>Tipo: liso 1C<br>Necessidade: Hidratação<br>Objetivo: preservar o brilho dos fios.</small></div>
+  <div class="card"><h3>Meu cabelo</h3><small id="hairinfo">Tipo: liso<br>Necessidade: Hidratação<br>Objetivo: preservar o brilho dos fios.</small></div>
   <div class="card"><h3>Minhas conquistas</h3><small>🟠 Primeiro cronograma<br>🏅 7 dias de sequência</small></div>
-  <div class="menu"><button>🔔 Notificações <span>›</span></button><button>🔒 Privacidade e segurança <span>›</span></button><button>❔ Ajuda e suporte <span>›</span></button><button>ℹ️ Sobre o Capilare <span>›</span></button></div>
+  <div class="menu"><button>🔔 Notificações <span>›</span></button><button>🔒 Privacidade e segurança <span>›</span></button><button>❔ Ajuda e suporte <span>›</span></button><button>ℹ️ Sobre o Capilare <span>›</span></button><button id="logout">🚪 Sair <span>›</span></button></div>
 </section>
 
 </main>
+<div id="ob" class="on"></div>
 <div id="toast"></div>
 <nav id="nav"></nav>
 </div>
@@ -210,6 +242,81 @@ $('pub').onclick=()=>toast('Em breve: publicar sua evolução 📸');
 $('edit').onclick=()=>toast('Em breve: editar perfil');
 // ---------- init ----------
 renderHome();renderCal();renderProds();renderFeed();go('home');
+// ---------- ONBOARDING (abertura, quiz, diagnóstico, login) ----------
+const sha=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))].map(b=>b.toString(16).padStart(2,'0')).join('');
+const LS={g:k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},d:k=>{try{localStorage.removeItem(k)}catch(e){}}};
+let pend=null,qi=0,ans=[];
+const logo=w=>`<img src="/logo.png" alt="" width="${w}" height="${w}">`;
+const fld=(id,l,t,ph)=>`<label class="f">${l}<input id="${id}" type="${t}" placeholder="${ph}"></label>`;
+const err=id=>`<small class="err" id="e_${id}"></small>`;
+const bk=to=>`<button class="back" data-go="${to}" aria-label="Voltar">←</button>`;
+const lnk=(t,to,l)=>`<p style="text-align:center;margin:14px 0 0">${t} <button class="lk" data-go="${to}">${l}</button></p>`;
+const cta=(a,t)=>`<button class="cta" data-a="${a}">${t}</button>`;
+const H=(t,p)=>`<h1>${t}</h1><p>${p}</p>`;
+const hint='<small class="muted" style="display:block;margin-bottom:12px">Modo demonstração: nenhum e-mail é enviado. Use o código <b>123456</b>.</small>';
+const SEC={
+ o_splash:['nv',logo(130)+`<div class="or">Seu Cronograma<br>Capilar Personalizado!</div><div style="font:800 26px 'Playfair Display',serif">Capilare</div>`],
+ o_ini:['nv',logo(150)+`<div class="or">Seu Cronograma<br>Capilar Personalizado!</div><p>Aqui está o seu plano semanal de tratamento. Acompanhe suas etapas de Hidratação, Nutrição e Reconstrução e veja a transformação do seu cabelo dia a dia.</p><button class="cta w" data-a="start">Iniciar ›</button>`],
+ o_quiz:['',`<div class="qh">Montando seu cronograma</div><div class="prog"><i id="qp"></i></div><div id="qb"></div><div class="nb"><button class="cta o" id="qback">‹ Voltar</button><button class="cta nv2" id="qnext" disabled>Próximo ›</button></div>`],
+ o_res:['',`<h1 style="text-align:center;font-size:22px">Seu Diagnóstico Capilar</h1><p style="text-align:center">Analisamos as necessidades do seu fio.</p><div class="card" style="background:#fff;border:1.5px solid var(--blue);display:flex;gap:12px;align-items:center">${logo(56)}<small id="rsum"></small></div><div class="card" style="background:#fff;border:1.5px solid var(--orange);text-align:center"><small style="color:var(--orange);font-weight:600">Seu foco principal agora:</small><h1 id="rfoc" style="font-size:20px;margin:6px 0"></h1><small id="rtxt"></small></div><button class="cta nv2" data-a="afterres">Ver meu cronograma completo ›</button>`],
+ o_welc:['',`<div style="margin-top:22%"><p style="font-size:15px;color:var(--ink);margin:0">Bem-vind@ ao</p><div class="or" style="font-size:36px">Capilare</div><p style="margin-top:8px">Crie uma conta para acessar todos os recursos do Capilare!</p><p style="color:var(--ink)">Vamos começar...</p><button class="cta ln" data-go="o_reg">Continuar com e-mail ✉</button>${lnk('Já tem uma conta?','o_login','Login')}</div><div class="ft">Termos de privacidade</div>`],
+ o_reg:['',bk('o_welc')+H('Cadastre-se','Crie uma conta para acessar todos os recursos do <b>Capilare</b>!')+fld('s_em','@ Email','email','Ex: seu@email.com')+fld('s_nm','👤 Seu nome','text','Ex: Sofia Martins')+fld('s_pw','🔒 Sua senha','password','Mínimo 6 caracteres')+err('s')+cta('signup','Cadastre-se')+lnk('Já tem uma conta?','o_login','Login')+'<div class="ft">Termos de privacidade</div>'],
+ o_code:['',bk('o_reg')+H('Cadastre-se','Enviamos um e-mail para a sua conta com um código de verificação!')+hint+fld('c_code','Verification Code','text','123456')+err('c')+cta('verify','Cadastre-se')],
+ o_login:['',bk('o_welc')+H('Login','Faça login para acompanhar seu cronograma e sua evolução capilar em um só lugar!')+fld('l_em','@ Email','email','Ex: seu@email.com')+fld('l_pw','🔒 Sua senha','password','Sua senha')+'<button class="lk" data-go="o_fgt" style="margin-bottom:10px;align-self:flex-start">Esqueceu sua senha?</button>'+err('l')+cta('login','Login')+lnk('Não tem uma conta?','o_reg','Cadastre-se')],
+ o_fgt:['',bk('o_login')+H('Esqueceu sua senha?','Enviaremos um código para o seu e-mail para você redefinir a senha.')+fld('f_em','@ Email','email','Ex: seu@email.com')+err('f')+cta('fsend','Enviar')],
+ o_fcode:['',bk('o_fgt')+H('Esqueceu sua senha?','Enviamos um e-mail para a sua conta com um código de verificação!')+hint+fld('f_code','Código de verificação','text','123456')+err('fc')+cta('fverify','Enviar')],
+ o_fnew:['',bk('o_login')+H('Esqueceu sua senha?','Defina sua nova senha para fazer login na sua conta.')+fld('f_pw','🔒 Nova senha','password','Mínimo 6 caracteres')+err('fn')+cta('fset','Continuar')]
+};
+$('ob').innerHTML=Object.entries(SEC).map(([id,[c,h]])=>`<section class="os ${c}" id="${id}">${h}</section>`).join('');
+const ob=id=>{document.querySelectorAll('.os').forEach(s=>s.classList.toggle('on',s.id===id));$('ob').classList.add('on');$('ob').scrollTop=0;document.querySelectorAll('.err').forEach(e=>e.textContent='')};
+// ---- quiz ----
+const Q=[
+{q:'Qual é o seu tipo de cabelo?',o:[['Liso (1A, 1B, 1C)','','liso'],['Ondulado (2A, 2B, 2C)','','ondulado'],['Cacheado (3A, 3B, 3C)','','cacheado'],['Crespo (4A, 4B, 4C)','','crespo'],['Não sei / Transição capilar','','em transição']]},
+{q:'Qual é a espessura dos seus fios?',o:[['Fio Fino','Teste de Comparação: é mais fino ou do mesmo tamanho que um fio de linha de costura.','fino'],['Fio Médio','Teste de Comparação: tem a mesma espessura que uma linha de costura tradicional.','médio'],['Fio Grosso','Teste de Comparação: mais encorpado que linha de costura, lembra a espessura de um fio de nylon fino.','grosso']]},
+{q:'Como é a oleosidade do seu couro cabeludo?',o:[['Oleoso','precisa lavar todos os dias','oleoso'],['Normal','lavagem a cada 2 dias é suficiente','normal'],['Seco','fica dias sem lavar sem parecer oleoso','seco'],['Misto','raiz oleosa e pontas secas','misto']]},
+{q:'Você possui alguma química no cabelo atualmente?',m:1,o:[['Tinta / Tonalizante'],['Descoloração / Luzes / Mechas'],['Progressiva / Selagem / Botox / Alisamento'],['Relaxamento'],['Nenhuma (Cabelo virgem)']]},
+{q:'Qual é a sua principal queixa hoje?',o:[['Ressecamento / Opacidade (sem brilho)','','ressecamento e falta de brilho'],['Frizz excessivo / Pontas duplas','','frizz e pontas duplas'],['Fios elásticos, quebradiços ou porosos','','fios elásticos e quebradiços'],['Queda de cabelo','','queda de cabelo'],['Falta de definição / Falta de volume','','falta de definição e volume']]},
+{q:'Qual é a sua disponibilidade para cuidados semanais?',o:[['Cuidados Básicos (1 a 2x por sem.)','Cronograma simplificado / Foco em etapas combinadas'],['Rotina Equilibrada (3 a 4x por sem.)','Cronograma capilar tradicional / Padrão ouro'],['Cuidado Intensivo (5x ou mais por sem.)','Cronograma intensivo / Danos severos ou rotina rígida']]}];
+const FOC={HID:['HIDRATAÇÃO','repor a água dos fios para devolver maciez, brilho e elasticidade'],NUT:['NUTRIÇÃO','repor óleos e lipídios para controlar o frizz, selar as pontas e dar alinhamento'],REC:['RECONSTRUÇÃO','repor a massa dos fios para fortalecer a estrutura capilar e proteger a cor']};
+function diag(){const [t,e,o,c,q]=ans,ch=c||[],sh=(i,j)=>Q[i].o[j][2];
+ const k=(ch.includes(1)||ch.includes(3)||q===2)?'REC':(q===0||o===2)?'HID':(q===1||q===4)?'NUT':'HID',f=FOC[k];
+ return{type:sh(0,t),foc:f[0],sum:`Seu cabelo é ${sh(0,t)}, com fio ${sh(1,e)} e couro cabeludo ${sh(2,o)}. Principal queixa: ${sh(4,q)}.`,txt:`Nos próximos 3 meses, sua prioridade será ${f[1]}, mantendo o cabelo saudável, brilhante e resistente.`}}
+function rq(){const q=Q[qi],a=ans[qi],sel=i=>q.m?(a||[]).includes(i):a===i;
+ $('qp').style.width=((qi+1)/Q.length*100)+'%';
+ $('qb').innerHTML=`<h2 style="text-align:center">${q.q}</h2>`+(q.m?'<small style="display:block;text-align:center;margin-top:2px">(Múltipla escolha)</small>':'')+'<div style="height:14px"></div>'+q.o.map((o,i)=>`<button class="opt ${sel(i)?'on':''}" data-i="${i}"><span>${o[0]}${o[1]?`<small>${o[1]}</small>`:''}</span><i></i></button>`).join('');
+ $('qnext').textContent=qi==Q.length-1?'Finalizar ›':'Próximo ›';
+ $('qnext').disabled=Array.isArray(a)?!a.length:a===undefined}
+$('qb').onclick=e=>{const b=e.target.closest('.opt');if(!b)return;const i=+b.dataset.i,q=Q[qi];
+ if(q.m){let a=ans[qi]||[];const last=q.o.length-1;a=i===last?(a.includes(i)?[]:[i]):(a.includes(i)?a.filter(x=>x!==i):[...a.filter(x=>x!==last),i]);ans[qi]=a}else ans[qi]=i;rq()};
+$('qnext').onclick=()=>{if(qi<Q.length-1){qi++;rq()}else{const d=diag();LS.s('cap_hair',{type:d.type,foc:d.foc});$('rsum').textContent=d.sum;$('rfoc').textContent=d.foc;$('rtxt').textContent=d.txt;ob('o_res')}};
+$('qback').onclick=()=>qi>0?(qi--,rq()):ob('o_ini');
+// ---- conta (simulada, salva só neste aparelho) ----
+const v=id=>$(id).value.trim(),E=(id,m)=>{$('e_'+id).textContent=m;return false},okMail=s=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+function applyUser(){const u=LS.g('cap_user'),h=LS.g('cap_hair');
+ if(u){$('uname').textContent=u.name.split(' ')[0];$('pname').textContent=u.name}
+ if(h){$('ptype').textContent='Cabelo '+h.type;$('hairinfo').innerHTML=`Tipo: ${h.type}<br>Necessidade: ${h.foc[0]+h.foc.slice(1).toLowerCase()}<br>Objetivo: manter o cabelo saudável, brilhante e resistente.`}}
+function enter(){LS.s('cap_session',1);applyUser();$('ob').classList.remove('on');go('home')}
+const next=()=>LS.g('cap_hair')?enter():ob('o_ini');
+const A={
+ start(){qi=0;ans=[];ob('o_quiz');rq()},
+ afterres(){enter()},
+ async signup(){const em=v('s_em').toLowerCase(),nm=v('s_nm'),pw=$('s_pw').value;
+  if(!okMail(em))return E('s','Informe um e-mail válido.');
+  if(nm.length<2)return E('s','Informe seu nome.');
+  if(pw.length<6)return E('s','A senha precisa ter ao menos 6 caracteres.');
+  pend={email:em,name:nm,hash:await sha(pw)};ob('o_code')},
+ verify(){if(v('c_code')!=='123456')return E('c','Código incorreto. Use 123456 (demonstração).');LS.s('cap_user',pend);LS.d('cap_hair');LS.s('cap_session',1);applyUser();ob('o_ini')},
+ async login(){const u=LS.g('cap_user');if(!u)return E('l','Conta não encontrada. Cadastre-se primeiro.');
+  if(v('l_em').toLowerCase()!==u.email||await sha($('l_pw').value)!==u.hash)return E('l','E-mail ou senha incorretos.');next()},
+ fsend(){const u=LS.g('cap_user'),em=v('f_em').toLowerCase();if(!okMail(em))return E('f','Informe um e-mail válido.');if(!u||u.email!==em)return E('f','E-mail não encontrado.');ob('o_fcode')},
+ fverify(){if(v('f_code')!=='123456')return E('fc','Código incorreto. Use 123456 (demonstração).');ob('o_fnew')},
+ async fset(){const pw=$('f_pw').value;if(pw.length<6)return E('fn','A senha precisa ter ao menos 6 caracteres.');const u=LS.g('cap_user');u.hash=await sha(pw);LS.s('cap_user',u);toast('Senha atualizada! Faça login.');ob('o_login')}};
+$('ob').addEventListener('click',e=>{const a=e.target.closest('[data-a]'),g=e.target.closest('[data-go]');if(a)A[a.dataset.a]();else if(g)ob(g.dataset.go)});
+$('logout').onclick=()=>{LS.d('cap_session');ob('o_login')};
+// ---- abertura ----
+applyUser();ob('o_splash');
+setTimeout(()=>LS.g('cap_session')&&LS.g('cap_user')?next():ob('o_welc'),1800);
+
 // ---------- PWA ----------
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}))}
 </script>
