@@ -279,7 +279,7 @@ const SEC={
  o_res:['',`<h1 style="text-align:center;font-size:22px">Seu Diagnóstico Capilar</h1><p style="text-align:center">Analisamos as necessidades do seu fio.</p><div class="card" style="background:#fff;border:1.5px solid var(--blue);display:flex;gap:12px;align-items:center">${logo(56)}<small id="rsum"></small></div><div class="card" style="background:#fff;border:1.5px solid var(--orange);text-align:center"><small style="color:var(--orange);font-weight:600">Seu foco principal agora:</small><h1 id="rfoc" style="font-size:20px;margin:6px 0"></h1><small id="rtxt"></small></div><button class="cta nv2" data-a="afterres">Ver meu cronograma completo ›</button>`],
  o_welc:['',`<div style="margin-top:22%"><p style="font-size:15px;color:var(--ink);margin:0">Bem-vind@ ao</p><div class="or" style="font-size:36px">Capilare</div><p style="margin-top:8px">Crie uma conta para acessar todos os recursos do Capilare!</p><p style="color:var(--ink)">Vamos começar...</p><button class="cta ln" data-go="o_reg">Continuar com e-mail ✉</button>${lnk('Já tem uma conta?','o_login','Login')}</div><div class="ft">Termos de privacidade</div>`],
  o_reg:['',bk('o_welc')+H('Cadastre-se','Crie uma conta para acessar todos os recursos do <b>Capilare</b>!')+fld('s_em','@ Email','email','Ex: seu@email.com')+fld('s_nm','👤 Seu nome','text','Ex: Sofia Martins')+fld('s_pw','🔒 Sua senha','password','Mínimo 6 caracteres')+err('s')+cta('signup','Cadastre-se')+lnk('Já tem uma conta?','o_login','Login')+'<div class="ft">Termos de privacidade</div>'],
-o_code:['',bk('o_reg')+H('Confirme seu e-mail','Enviamos um link de confirmação para <b id="cmail"></b>. Abra o e-mail, toque no link e volte aqui. Confira também a caixa de spam.')+err('c')+cta('verify','Já confirmei ›')+'<p style="text-align:center;margin:14px 0 0"><button class="lk" data-a="resend">Reenviar e-mail</button></p>'],
+o_code:['',bk('o_reg')+H('Confirme seu e-mail','Enviamos um link de confirmação para <b id="cmail"></b>. Abra o e-mail, toque no link e volte aqui. Confira também a caixa de spam.')+err('c')+cta('verify','Já confirmei ›')+'<p style="text-align:center;margin:14px 0 0"><button class="lk" data-a="resend">Reenviar e-mail</button><br><br><button class="lk" data-a="skipv">Continuar sem confirmar por enquanto</button></p>'],
  o_login:['',bk('o_welc')+H('Login','Faça login para acompanhar seu cronograma e sua evolução capilar em um só lugar!')+fld('l_em','@ Email','email','Ex: seu@email.com')+fld('l_pw','🔒 Sua senha','password','Sua senha')+'<button class="lk" data-go="o_fgt" style="margin-bottom:10px;align-self:flex-start">Esqueceu sua senha?</button>'+err('l')+cta('login','Login')+lnk('Não tem uma conta?','o_reg','Cadastre-se')],
  o_fgt:['',bk('o_login')+H('Esqueceu sua senha?','Enviaremos um código para o seu e-mail para você redefinir a senha.')+fld('f_em','@ Email','email','Ex: seu@email.com')+err('f')+cta('fsend','Enviar')],
 o_fcode:['',bk('o_login')+H('Verifique seu e-mail','Se esse e-mail tiver uma conta, enviamos um link para você criar uma nova senha. Depois é só voltar e fazer login.')+'<button class="cta" data-go="o_login">Voltar para o login</button>']
@@ -361,7 +361,8 @@ setAv();
 // ---------- FIREBASE (contas e dados na nuvem) ----------
 let cur=null,splashDone=false,authReady=false,booted=false;
 const EM={'auth/email-already-in-use':'Este e-mail já tem conta. Faça login.','auth/invalid-email':'E-mail inválido.','auth/weak-password':'A senha precisa ter ao menos 6 caracteres.','auth/invalid-credential':'E-mail ou senha incorretos.','auth/wrong-password':'E-mail ou senha incorretos.','auth/user-not-found':'E-mail ou senha incorretos.','auth/too-many-requests':'Muitas tentativas. Aguarde um pouco e tente de novo.','auth/network-request-failed':'Sem conexão. Verifique sua internet.','auth/operation-not-allowed':'Login por e-mail não está ativado no Firebase.'};
-const msg=c=>EM[c]||'Algo deu errado. Tente de novo.';
+const msg=c=>EM[c]||'Algo deu errado ('+(c||'erro')+'). Tente de novo.';
+const okV=u=>u.emailVerified||LS.g('cap_skipv')===u.uid;
 function cloud(d){if(window.FB&&cur)FB.save(cur.uid,d).catch(()=>toast('Não consegui salvar na nuvem agora.'))}
 async function hydrate(u){cur=u;let d=null;try{d=await FB.load(u.uid)}catch(e){}
  if(d===null)return applyUser(); // sem rede: mantém o que está salvo no aparelho
@@ -372,7 +373,7 @@ async function hydrate(u){cur=u;let d=null;try{d=await FB.load(u.uid)}catch(e){}
  setAv();applyUser();renderHome();renderCal()}
 async function route(){if(!splashDone||!authReady||booted)return;booted=true;
  if(!cur)return ob('o_welc');
- if(!cur.emailVerified){$('cmail').textContent=cur.email;return ob('o_code')}
+ if(!okV(cur)){$('cmail').textContent=cur.email;return ob('o_code')}
  await hydrate(cur);next()}
 window.onAuth=u=>{cur=u;authReady=true;route()};
 setTimeout(()=>{splashDone=true;route()},1800);
@@ -383,16 +384,17 @@ Object.assign(A,{
   if(nm.length<2)return E('s','Informe seu nome.');
   if(pw.length<6)return E('s','A senha precisa ter ao menos 6 caracteres.');
   if(!window.FB)return E('s','Sem conexão com o servidor. Tente de novo.');
-  try{cur=await FB.signUp(em,pw,nm);$('cmail').textContent=em;ob('o_code')}catch(e){E('s',msg(e.code))}},
+  try{cur=await FB.signUp(em,pw,nm);$('cmail').textContent=em;ob('o_code');if(FB.mailErr)E('c','Não consegui enviar o e-mail ('+FB.mailErr+'). Toque em Reenviar ou continue sem confirmar.')}catch(e){E('s',msg(e.code))}},
  async verify(){try{cur=await FB.reload();
    if(cur&&cur.emailVerified){await hydrate(cur);next()}
    else E('c','Ainda não vimos a confirmação. Toque no link do e-mail e tente de novo.')}catch(e){E('c',msg(e.code))}},
+ async skipv(){LS.s('cap_skipv',cur.uid);await hydrate(cur);next()},
  async resend(){try{await FB.verifyMail();toast('E-mail reenviado! 📩')}catch(e){E('c',msg(e.code))}},
  async login(){const em=v('l_em').toLowerCase(),pw=$('l_pw').value;
   if(!okMail(em)||!pw)return E('l','Informe e-mail e senha.');
   if(!window.FB)return E('l','Sem conexão com o servidor. Tente de novo.');
   try{cur=await FB.signIn(em,pw);
-   if(!cur.emailVerified){$('cmail').textContent=cur.email;return ob('o_code')}
+   if(!okV(cur)){$('cmail').textContent=cur.email;return ob('o_code')}
    await hydrate(cur);next()}catch(e){E('l',msg(e.code))}},
  async fsend(){const em=v('f_em').toLowerCase();if(!okMail(em))return E('f','Informe um e-mail válido.');
   if(!window.FB)return E('f','Sem conexão com o servidor. Tente de novo.');
@@ -419,8 +421,9 @@ const app=initializeApp({
 const auth=getAuth(app),db=getFirestore(app);auth.languageCode='pt-BR';
 window.FB={
  async signUp(e,p,n){const c=await createUserWithEmailAndPassword(auth,e,p);
-  try{await updateProfile(c.user,{displayName:n});await sendEmailVerification(c.user)}catch(x){}
+  try{await updateProfile(c.user,{displayName:n})}catch(x){}
   try{await setDoc(doc(db,'users',c.user.uid),{name:n,email:e},{merge:true})}catch(x){}
+  FB.mailErr=null;try{await sendEmailVerification(c.user)}catch(x){FB.mailErr=x.code||String(x)}
   return c.user},
  async signIn(e,p){return(await signInWithEmailAndPassword(auth,e,p)).user},
  async reload(){await auth.currentUser.reload();return auth.currentUser},
@@ -433,4 +436,4 @@ window.FB={
 onAuthStateChanged(auth,u=>window.onAuth&&window.onAuth(u));
 </script>
 </body>
-  </html>
+</html>
