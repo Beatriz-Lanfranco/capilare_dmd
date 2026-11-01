@@ -1,6 +1,5 @@
-
 // Service worker do Capilare — cache offline
-const CACHE = 'capilare-v7';
+const CACHE = 'capilare-v8';
 const ASSETS = [
   '/', '/index.html', '/manifest.json',
   '/icon-192.png', '/icon-512.png',
