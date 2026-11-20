@@ -129,20 +129,20 @@ button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
 <!-- HOME -->
 <section class="screen on" id="home">
   <div class="head"><div><h1>Olá <span id="uname">Sofia</span>!</h1><small>Seu cabelo merece um<br>cuidado especial hoje.</small></div><div class="avatar av">👩🏻‍🦰</div></div>
-  <div class="card"><div class="row sp"><h3>Seu progresso</h3><small>Ver detalhes</small></div>
+  <div class="card"><div class="row sp"><h3>Seu progresso</h3><button class="lk" data-tab="calendario" style="font-weight:500">Ver detalhes ›</button></div>
     <div class="row" style="margin-top:10px"><div class="ring" id="ring"><b id="pct">0%</b></div>
       <div style="flex:1"><small>Cronograma concluído</small><div class="bar"><i id="bar"></i></div><small id="cnt"></small></div></div></div>
   <div class="card navy"><div class="row sp"><div><small style="color:#cfe0ec">Próximo tratamento</small><h1 id="nxt">Hidratação</h1></div>
     <div style="text-align:right"><small style="color:#fff">Hoje • 18:30</small><br><button class="btn w" id="start" style="margin-top:6px">Iniciar</button></div></div></div>
   <div class="card"><h3 style="text-align:center;margin-bottom:8px">Cronograma da semana</h3><div class="week" id="week"></div></div>
-  <div class="row sp" style="margin-bottom:8px"><h2>Recomendações para você</h2><small>Ver todos</small></div>
-  <div class="prods" id="recs"></div>
+  <div class="row sp" data-tab="produtos" style="margin-bottom:8px;cursor:pointer"><h2>Recomendações para você</h2><button class="lk" style="font-weight:500">Ver todos ›</button></div>
+  <div class="prods" id="recs" data-tab="produtos" style="cursor:pointer"></div>
 </section>
 
 <!-- CALENDARIO -->
 <section class="screen" id="calendario">
   <div class="head"><h1>Meu Cronograma</h1><button class="bell">🔔</button></div>
-  <div class="banner">✨ Novo cronograma capilar</div>
+  <button class="banner" id="newplan" style="display:block;width:100%;border:0;cursor:pointer;font-family:Poppins,sans-serif">✨ Novo cronograma capilar</button>
   <div class="mes"><button id="prev">‹</button><span id="mes">Outubro 2026</span><button id="next">›</button></div>
   <div class="card"><div class="cal" id="cal"></div>
     <div class="leg"><span><i class="dot" style="background:var(--blue)"></i>Hidratação</span><span><i class="dot" style="background:var(--orange)"></i>Nutrição</span><span><i class="dot" style="background:var(--pink)"></i>Reconstrução</span></div></div>
@@ -310,13 +310,13 @@ function rq(){const q=Q[qi],a=ans[qi],sel=i=>q.m?(a||[]).includes(i):a===i;
 $('qb').onclick=e=>{const b=e.target.closest('.opt');if(!b)return;const i=+b.dataset.i,q=Q[qi];
  if(q.m){let a=ans[qi]||[];const last=q.o.length-1;a=i===last?(a.includes(i)?[]:[i]):(a.includes(i)?a.filter(x=>x!==i):[...a.filter(x=>x!==last),i]);ans[qi]=a}else ans[qi]=i;rq()};
 $('qnext').onclick=()=>{if(qi<Q.length-1){qi++;rq()}else{const d=diag();LS.s('cap_hair',{type:d.type,foc:d.foc});cloud({hair:{type:d.type,foc:d.foc}});$('rsum').textContent=d.sum;$('rfoc').textContent=d.foc;$('rtxt').textContent=d.txt;ob('o_res')}};
-$('qback').onclick=()=>qi>0?(qi--,rq()):ob('o_ini');
+$('qback').onclick=()=>qi>0?(qi--,rq()):(retake?(retake=false,$('ob').classList.remove('on')):ob('o_ini'));
 // ---- conta (simulada, salva só neste aparelho) ----
 const v=id=>$(id).value.trim(),E=(id,m)=>{$('e_'+id).textContent=m;return false},okMail=s=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 function applyUser(){const u=LS.g('cap_user'),h=LS.g('cap_hair');
  if(u){$('uname').textContent=u.name.split(' ')[0];$('pname').textContent=u.name}
  if(h){$('ptype').textContent='Cabelo '+h.type;$('hairinfo').innerHTML=`Tipo: ${h.type}<br>Necessidade: ${h.foc[0]+h.foc.slice(1).toLowerCase()}<br>Objetivo: manter o cabelo saudável, brilhante e resistente.`}}
-function enter(){LS.s('cap_session',1);applyUser();$('ob').classList.remove('on');go('home')}
+function enter(){retake=false;LS.s('cap_session',1);applyUser();$('ob').classList.remove('on');go('home')}
 const next=()=>LS.g('cap_hair')?enter():ob('o_ini');
 const A={
  start(){qi=0;ans=[];ob('o_quiz');rq()},
@@ -406,6 +406,10 @@ Object.assign(A,{
 $('logout').onclick=async()=>{try{await FB.out()}catch(e){}
  ['cap_user','cap_hair','cap_av','cap_done','cap_session'].forEach(k=>LS.d(k));location.reload()};
 
+// ---------- ATALHOS ----------
+let retake=false;
+$('newplan').onclick=()=>{retake=true;A.start()};
+document.addEventListener('click',e=>{const t=e.target.closest('[data-tab]');if(t)go(t.dataset.tab)});
 // ---------- PWA ----------
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}))}
 </script>
