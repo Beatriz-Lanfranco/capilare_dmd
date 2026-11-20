@@ -178,7 +178,7 @@ button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
 
 </main>
 <div id="sheet" hidden><div id="shbd"></div><div class="pn"><h2>Escolha seu avatar</h2>
-<div class="avatar" id="prev" style="width:84px;height:84px;font-size:44px;margin:12px auto"></div>
+<div class="avatar" id="avprev" style="width:84px;height:84px;font-size:44px;margin:12px auto"></div>
 <div class="ag" id="ag"></div><div class="sw" id="sw"></div>
 <label class="cta o" style="display:block;margin:0 0 12px;cursor:pointer">📷 Enviar minha foto<input type="file" id="pf" accept="image/*" hidden></label>
 <div class="row"><button class="cta o" id="shc">Cancelar</button><button class="cta" id="shs">Salvar</button></div></div></div>
@@ -190,7 +190,13 @@ button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
 <script>
 // ---------- dados ----------
 const TODAY=new Date(2026,9,8); // data fixa de demonstração (08/10/2026)
-const PLAN={hid:[1,5,8,12,15,19,21,26,28],nut:[3,10,17,24],rec:[30]}; // outubro/2026
+const TY=TODAY.getFullYear(),TM=TODAY.getMonth();
+// chave = ano-mês (mês começa em 0: 9=outubro, 10=novembro, 11=dezembro)
+const PLANS={
+ '2026-9':{hid:[1,5,8,12,15,19,21,26,28],nut:[3,10,17,24],rec:[30]},
+ '2026-10':{hid:[2,5,9,12,16,19,23,26,30],nut:[7,14,21],rec:[28]},
+ '2026-11':{hid:[3,7,10,14,17,21,24,28,31],nut:[5,12,19],rec:[26]}};
+const planOf=(y=view.y,m=view.m)=>PLANS[y+'-'+m]||{hid:[],nut:[],rec:[]};
 const NAMES={hid:'Hidratação',nut:'Nutrição',rec:'Reconstrução'};
 const L={hid:'H',nut:'N',rec:'R'};
 const PRODUCTS=[
@@ -208,9 +214,9 @@ let done=new Set();try{done=new Set(JSON.parse(localStorage.getItem('cap_done')|
 const save=()=>{try{localStorage.setItem('cap_done',JSON.stringify([...done]))}catch(e){}cloud({done:[...done]})};
 let view={y:2026,m:9},sel=8;
 const $=id=>document.getElementById(id);
-const key=d=>`${view.y}-${view.m}-${d}`;
-const typeOf=d=>view.y==2026&&view.m==9?Object.keys(PLAN).find(k=>PLAN[k].includes(d)):null;
-const isDone=(d)=>done.has(key(d))||(view.y==2026&&view.m==9&&d<TODAY.getDate()&&!!typeOf(d)&&!done.has('undone'+d));
+const key=(d,y=view.y,m=view.m)=>`${y}-${m}-${d}`;
+const typeOf=(d,y=view.y,m=view.m)=>{const P=planOf(y,m);return Object.keys(P).find(k=>P[k].includes(d))||null};
+const isDone=(d,y=view.y,m=view.m)=>done.has(key(d,y,m))||(!!typeOf(d,y,m)&&new Date(y,m,d)<new Date(TY,TM,TODAY.getDate()));
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)}
 // ---------- navegação ----------
 const TABS=[['home','🏠','Home'],['calendario','📅','Calendário'],['comunidade','💬','Comunidade'],['produtos','♡','Produtos'],['perfil','👤','Perfil']];
@@ -219,23 +225,23 @@ function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.togg
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===id));document.querySelector('main').scrollTop=0}
 $('nav').onclick=e=>{const b=e.target.closest('button');if(b)go(b.dataset.t)};
 // ---------- progresso ----------
-function counts(){const all=[];for(const k in PLAN)PLAN[k].forEach(d=>all.push(d));
- const dn=all.filter(d=>isDone(d)).length;return{total:all.length,dn}}
+function counts(){const P=planOf(TY,TM),all=[];for(const k in P)P[k].forEach(d=>all.push(d));
+ const dn=all.filter(d=>isDone(d,TY,TM)).length;return{total:all.length,dn}}
 function renderHome(){const{total,dn}=counts(),p=Math.round(dn/total*100);
  $('pct').textContent=p+'%';$('ring').style.setProperty('--p',p);$('bar').style.width=p+'%';
  $('cnt').textContent=`✔ ${dn} concluídos   ⏰ ${total-dn} restantes`;$('pdone').textContent=dn;
- const t=typeOf(TODAY.getDate());$('nxt').textContent=t?NAMES[t]:'Descanso';
- $('start').textContent=isDone(TODAY.getDate())?'Concluído ✔':'Iniciar';
+ const t=typeOf(TODAY.getDate(),TY,TM);$('nxt').textContent=t?NAMES[t]:'Descanso';
+ $('start').textContent=isDone(TODAY.getDate(),TY,TM)?'Concluído ✔':'Iniciar';
  const w=[];const mon=TODAY.getDate()-((TODAY.getDay()+6)%7);
- ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].forEach((n,i)=>{const d=mon+i,k=typeOf(d);
+ ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].forEach((n,i)=>{const d=mon+i,k=typeOf(d,TY,TM);
   w.push(`<div>${n}<i style="${k?`background:var(--${k=='hid'?'blue':k=='nut'?'orange':'pink'});color:${k=='hid'?'var(--navy)':'#fff'}`:''}">${k?L[k]:'L'}</i><br>${k?NAMES[k].slice(0,9):'Livre'}</div>`)});
  $('week').innerHTML=w.join('');
- $('c1').textContent=PLAN.hid.length;$('c2').textContent=PLAN.nut.length;$('c3').textContent=PLAN.rec.length}
-$('start').onclick=()=>{const d=TODAY.getDate();if(!typeOf(d))return toast('Hoje é dia livre 🌿');
- done.add(key(d));save();renderHome();renderCal();toast('Tratamento concluído! 💙')};
+ }
+$('start').onclick=()=>{const d=TODAY.getDate();if(!typeOf(d,TY,TM))return toast('Hoje é dia livre 🌿');
+ done.add(key(d,TY,TM));save();renderHome();renderCal();toast('Tratamento concluído! 💙')};
 // ---------- calendário ----------
 const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-function renderCal(){$('mes').textContent=`${MESES[view.m]} ${view.y}`;
+function renderCal(){const P=planOf();$('c1').textContent=P.hid.length;$('c2').textContent=P.nut.length;$('c3').textContent=P.rec.length;$('mes').textContent=`${MESES[view.m]} ${view.y}`;
  let h=['D','S','T','Q','Q','S','S'].map(x=>`<div class="dw">${x}</div>`).join('');
  const first=new Date(view.y,view.m,1).getDay(),n=new Date(view.y,view.m+1,0).getDate();
  for(let i=0;i<first;i++)h+='<div></div>';
@@ -344,7 +350,7 @@ const COL=['#a4243b','#e8781e','#7fa6c9','#0b2a7a','#d94fb5','#4f8a5b'];
 let av=LS.g('cap_av'),dr=null;
 function paint(el,a){if(!a)return;if(a.p){el.innerHTML=`<img src="${a.p}" alt="Foto de perfil">`;el.style.background='#cfe0ec'}else{el.textContent=a.e;el.style.background=a.c}}
 const setAv=()=>document.querySelectorAll('.av').forEach(el=>paint(el,av));
-function drawSheet(){paint($('prev'),dr);
+function drawSheet(){paint($('avprev'),dr);
  $('ag').innerHTML=EMO.map((e,i)=>`<button data-e="${e}" class="${dr.e===e?'on':''}" aria-label="Avatar ${i+1}">${e}</button>`).join('');
  $('sw').innerHTML=COL.map(c=>`<button data-c="${c}" style="background:${c}" class="${dr.c===c?'on':''}" aria-label="Cor de fundo"></button>`).join('')}
 const openSh=()=>{dr=av?{...av}:{e:EMO[0],c:COL[0]};drawSheet();$('sheet').hidden=false};
